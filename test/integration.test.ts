@@ -105,7 +105,11 @@ describe('Supabase Integration Tests', () => {
       const testMessage = { message: 'test' }
       let receivedMessage: any
 
-      channel.on('broadcast', { event: '*' }, (payload) => (receivedMessage = payload)).subscribe()
+      channel
+        .on('broadcast', { event: '*' }, (payload) => (receivedMessage = payload))
+        .subscribe((_status, error) => {
+          if (error) console.error(error)
+        })
 
       // Wait a bit for the subscription to establish
       await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -121,7 +125,11 @@ describe('Supabase Integration Tests', () => {
       const testMessage = { message: 'test' }
       let receivedMessage: any
 
-      channel.on('broadcast', { event: '*' }, (payload) => (receivedMessage = payload)).subscribe()
+      channel
+        .on('broadcast', { event: '*' }, (payload) => (receivedMessage = payload))
+        .subscribe((_status, error) => {
+          if (error) console.error(error)
+        })
 
       for (let i = 0; i < 10; i++) {
         supabase.channel(channelName, {
