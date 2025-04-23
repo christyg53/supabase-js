@@ -8,7 +8,9 @@ describe('Supabase Integration Tests', () => {
   const ANON_KEY =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
 
-  const supabase = createClient(SUPABASE_URL, ANON_KEY)
+  const supabase = createClient(SUPABASE_URL, ANON_KEY, {
+    realtime: { heartbeatIntervalMs: 500 },
+  })
 
   test('should connect to Supabase instance', async () => {
     expect(supabase).toBeDefined()
@@ -56,6 +58,10 @@ describe('Supabase Integration Tests', () => {
   })
 
   describe('Authentication', () => {
+    afterAll(async () => {
+      // Clean up by signing out the user
+      await supabase.auth.signOut()
+    })
     test('should sign up a user', async () => {
       const email = `test-${Date.now()}@example.com`
       const password = 'password123'
@@ -74,13 +80,25 @@ describe('Supabase Integration Tests', () => {
   describe('Realtime', () => {
     const channelName = `channel-${crypto.randomUUID()}`
     let channel: RealtimeChannel
+    let email: string
+    let password: string
+    beforeEach(async () => {
+      await supabase.auth.signOut()
 
-    beforeEach(() => {
-      channel = supabase.channel(channelName, { config: { broadcast: { self: true } } })
+      email = `test-${Date.now()}@example.com`
+      password = 'password123'
+
+      await supabase.auth.signUp({ email, password })
+
+      channel = supabase.channel(channelName, {
+        config: { broadcast: { self: true }, private: true },
+      })
+
+      supabase.realtime.setAuth()
     })
 
-    afterEach(() => {
-      supabase.removeChannel(channel)
+    afterEach(async () => {
+      await supabase.removeAllChannels()
     })
 
     test('should handle channel broadcast messages', async () => {
@@ -97,6 +115,29 @@ describe('Supabase Integration Tests', () => {
       // Await on message
       await new Promise((resolve) => setTimeout(resolve, 1000))
       expect(receivedMessage).toBeDefined()
+    })
+
+    test('handles creation of multiple channels with the same name', async () => {
+      const testMessage = { message: 'test' }
+      let receivedMessage: any
+
+      channel.on('broadcast', { event: '*' }, (payload) => (receivedMessage = payload)).subscribe()
+
+      for (let i = 0; i < 10; i++) {
+        supabase.channel(channelName, {
+          config: { broadcast: { self: true }, private: true },
+        })
+      }
+
+      // Wait a bit for the subscription to establish
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      channel.send({ type: 'broadcast', event: 'test-event', payload: testMessage })
+
+      // Await on message
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      expect(receivedMessage).toBeDefined()
+      expect(supabase.realtime.channels.size).toBe(1)
     })
   })
 })
