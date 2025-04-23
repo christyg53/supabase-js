@@ -39,16 +39,13 @@ jobs:
         uses: supabase/setup-cli@v1
         with:
           version: latest
+
+      - name: Start Supabase
+        run: supabase start
       - name: Run tests
         run: |
           npm clean-install
           npm run test:coverage
-
-      - name: Start Supabase
-        run: supabase start
-
-      - name: Run Integration tests
-        run: pnpm run test:integration
 
       - name: Upload coverage results to Coveralls
         uses: coverallsapp/github-action@master
