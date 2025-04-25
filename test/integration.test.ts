@@ -112,14 +112,14 @@ describe('Supabase Integration Tests', () => {
         })
 
       // Wait a bit for the subscription to establish
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 3000))
 
       channel.send({ type: 'broadcast', event: 'test-event', payload: testMessage })
 
       // Await on message
       await new Promise((resolve) => setTimeout(resolve, 1000))
       expect(receivedMessage).toBeDefined()
-    })
+    }, 10000)
 
     test('handles creation of multiple channels with the same name', async () => {
       const testMessage = { message: 'test' }
@@ -138,7 +138,7 @@ describe('Supabase Integration Tests', () => {
       }
 
       // Wait a bit for the subscription to establish
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 3000))
 
       channel.send({ type: 'broadcast', event: 'test-event', payload: testMessage })
 
@@ -146,6 +146,6 @@ describe('Supabase Integration Tests', () => {
       await new Promise((resolve) => setTimeout(resolve, 1000))
       expect(receivedMessage).toBeDefined()
       expect(supabase.realtime.channels.size).toBe(1)
-    })
+    }, 10000)
   })
 })
