@@ -1,0 +1,6 @@
+[functions.validateStartupIdea]
+env = [
+  { name = "OPENAI_API_KEY", value = "your-openai-key" },
+  { name = "TWITTER_BEARER_TOKEN", value = "your-twitter-key" },
+  { name = "GOOGLE_API_KEY", value = "your-google-key" }
+]
