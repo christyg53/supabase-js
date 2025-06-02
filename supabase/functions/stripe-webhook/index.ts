@@ -38,3 +38,4 @@ serve(async (req) => {
 });
 
 to connect webhook to stripe
+EDIT UPDATE
