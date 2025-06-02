@@ -36,3 +36,5 @@ serve(async (req) => {
 
   return new Response("Webhook received", { status: 200 });
 });
+
+to connect webhook to stripe
