@@ -10,14 +10,19 @@ serve(async (req) => {
   const secret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
 
   if (!sig || !secret) {
-    return new Response("Missing signature or secret", { status: 400 });
+    return new Response("Missing signature or secret", {
+      status: 400,
+    });
   }
 
   let body;
   try {
-    body = await req.text();
+    const bodyBuffer = await new Response(req.body).arrayBuffer();
+    body = new TextDecoder("utf-8").decode(bodyBuffer);
   } catch {
-    return new Response("Could not read body", { status: 400 });
+    return new Response("Could not read raw body", {
+      status: 400,
+    });
   }
 
   let event;
@@ -25,8 +30,10 @@ serve(async (req) => {
     event = stripe.webhooks.constructEvent(body, sig, secret);
     console.log("✅ Event verified:", event.type);
   } catch (err) {
-    console.error("❌ Signature verification failed:", err.message);
-    return new Response("Signature verification failed", { status: 400 });
+    console.error("❌ Invalid signature", err.message);
+    return new Response("Signature verification failed", {
+      status: 400,
+    });
   }
 
   if (event.type === "checkout.session.completed") {
@@ -36,9 +43,3 @@ serve(async (req) => {
 
   return new Response("Webhook received", { status: 200 });
 });
-
-to connect webhook to stripe
-EDIT UPDATE
-// redeployed after updating webhook secret
-// Redeployed after syncing webhook secret
-
