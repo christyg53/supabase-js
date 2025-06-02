@@ -1,5 +1,6 @@
+import { SupabaseClientOptions } from '@supabase/supabase-js';
 // helpers.ts
-import { SupabaseClientOptions } from './types'
+import { Database } from './customTypes';
 
 export function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {

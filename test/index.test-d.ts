@@ -1,6 +1,6 @@
 import { expectError, expectType } from 'tsd'
 import { PostgrestSingleResponse, createClient } from '../src/index'
-import { Database, Json } from './types'
+import { Database } from './customTypes';
 
 const URL = 'http://localhost:3000'
 const KEY = 'some.fake.key'

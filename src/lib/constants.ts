@@ -1,6 +1,7 @@
+import { SupabaseAuthClientOptions } from '@supabase/auth-js';
 // constants.ts
 import { RealtimeClientOptions } from '@supabase/realtime-js'
-import { SupabaseAuthClientOptions } from './types'
+import { Database } from './customTypes';
 import { version } from './version'
 
 let JS_ENV = ''

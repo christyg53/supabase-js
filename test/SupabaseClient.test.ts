@@ -1,6 +1,6 @@
 import { PostgrestClient } from '@supabase/postgrest-js'
 import { createClient, SupabaseClient } from '../src/index'
-import { Database } from './types'
+import { Database } from './customTypes';
 
 const URL = 'http://localhost:3000'
 const KEY = 'some.fake.key'
